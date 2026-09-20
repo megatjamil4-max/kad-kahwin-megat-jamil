@@ -439,7 +439,7 @@
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div>
                             <label class="block text-xs font-bold text-navy-900 uppercase tracking-wider mb-2">Nombor Telefon</label>
-                            <input type="tel" id="rsvp-phone" placeholder="012-3456789" class="w-full px-4 py-3 rounded-lg bg-cream-50 border border-gold-400/60 text-navy-900 text-sm focus:outline-none focus:ring-2 focus:ring-gold-500">
+                            <input type="tel" id="rsvp" placeholder="012-3456789" class="w-full px-4 py-3 rounded-lg bg-cream-50 border border-gold-400/60 text-navy-900 text-sm focus:outline-none focus:ring-2 focus:ring-gold-500">
                         </div>
                         <div>
                             <label class="block text-xs font-bold text-navy-900 uppercase tracking-wider mb-2">Status Kehadiran <span class="text-red-500">*</span></label>
@@ -792,41 +792,58 @@ function updateMusicIcon() {
            5. RSVP & GUESTBOOK INTERACTION
         ------------------------------------------------------------- */
         function submitRSVP(e) {
-            e.preventDefault();
-            const name = document.getElementById('rsvp-name').value;
-            const status = document.getElementById('rsvp-status').value;
-            const pax = document.getElementById('rsvp-pax').value;
+    e.preventDefault();
 
-            // Save RSVP to LocalStorage
-            const rsvpData = { name, status, pax, date: new Date().toLocaleDateString() };
-            try {
-                localStorage.setItem('wedding_rsvp_' + name, JSON.stringify(rsvpData));
-            } catch (err) {
-                console.log("LocalStorage write skipped");
-            }
-fetch("https://script.google.com/macros/s/AKfycbxgLPmyYaYToLsdVZYZfJhmarMgQCk-Wa0p-RIH1mA531-MSLF2WRsjdon1lkaZUQ4Kbw/exec", {
-    method: "POST",
-    mode: "no-cors",
-    headers: {
-        "Content-Type": "text/plain;charset=utf-8"
-    },
-    body: JSON.stringify({
-        name: name,
-        phone: "",
-        status: status,
-        pax: pax,
-        notes: ""
-    })
-});
-            const alertBox = document.getElementById('rsvp-alert');
-            alertBox.classList.remove('hidden');
+    const name = document.getElementById('rsvp-name').value;
+    const phone = document.getElementById('rsvp-phone').value;
+    const status = document.getElementById('rsvp-status').value;
+    const pax = document.getElementById('rsvp-pax').value;
+    const notes = document.getElementById('rsvp-notes').value;
 
-            document.getElementById('rsvp-form').reset();
+    // Save RSVP to LocalStorage
+    const rsvpData = {
+        name,
+        phone,
+        status,
+        pax,
+        notes,
+        date: new Date().toLocaleDateString()
+    };
 
-            setTimeout(() => {
-                alertBox.classList.add('hidden');
-            }, 5000);
-        }
+    try {
+        localStorage.setItem(
+            'wedding_rsvp_' + name,
+            JSON.stringify(rsvpData)
+        );
+    } catch (err) {
+        console.log("LocalStorage write skipped");
+    }
+
+    // Hantar RSVP ke Google Sheets
+    fetch("https://script.google.com/macros/s/AKfycbxgLPmyYaYToLsdVZYZfJhmarMgQCk-Wa0p-RIH1mA531-MSLF2WRsjdon1lkaZUQ4Kbw/exec", {
+        method: "POST",
+        mode: "no-cors",
+        headers: {
+            "Content-Type": "text/plain;charset=utf-8"
+        },
+        body: JSON.stringify({
+            name: name,
+            phone: phone,
+            status: status,
+            pax: pax,
+            notes: notes
+        })
+    });
+
+    const alertBox = document.getElementById('rsvp-alert');
+    alertBox.classList.remove('hidden');
+
+    document.getElementById('rsvp-form').reset();
+
+    setTimeout(() => {
+        alertBox.classList.add('hidden');
+    }, 5000);
+}
 
         function addWish(e) {
             e.preventDefault();
