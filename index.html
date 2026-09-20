@@ -624,53 +624,46 @@
             osc.stop(audioCtx.currentTime + delay + duration);
         }
 
-        function startAmbientMusic() {
-            initAudio();
-            if (audioCtx.state === 'suspended') {
-                audioCtx.resume();
-            }
+function startAmbientMusic() {
+    const weddingMusic = document.getElementById('wedding-music');
+
+    weddingMusic.volume = 0.30;
+
+    weddingMusic.play()
+        .then(() => {
             isPlaying = true;
             updateMusicIcon();
+        })
+        .catch((error) => {
+            console.log("Muzik tidak dapat dimainkan:", error);
+        });
+}
 
-            // Arpeggiate chords
-            let noteStep = 0;
-            synthInterval = setInterval(() => {
-                if (!isPlaying) return;
-                const currentChord = chordProgression[chordIndex];
-                
-                // Play arpeggiated notes
-                playChordNote(currentChord[noteStep % currentChord.length], 0, 2.0);
-                
-                noteStep++;
-                if (noteStep >= 8) {
-                    noteStep = 0;
-                    chordIndex = (chordIndex + 1) % chordProgression.length;
-                }
-            }, 600);
-        }
+function stopAmbientMusic() {
+    const weddingMusic = document.getElementById('wedding-music');
 
-        function stopAmbientMusic() {
-            isPlaying = false;
-            if (synthInterval) clearInterval(synthInterval);
-            updateMusicIcon();
-        }
+    weddingMusic.pause();
+    isPlaying = false;
+    updateMusicIcon();
+}
 
-        function toggleAudio() {
-            if (isPlaying) {
-                stopAmbientMusic();
-            } else {
-                startAmbientMusic();
-            }
-        }
+function toggleAudio() {
+    if (isPlaying) {
+        stopAmbientMusic();
+    } else {
+        startAmbientMusic();
+    }
+}
 
-        function updateMusicIcon() {
-            const icon = document.getElementById('music-icon');
-            if (isPlaying) {
-                icon.className = 'fa-solid fa-music text-gold-400 animate-spin';
-            } else {
-                icon.className = 'fa-solid fa-volume-xmark text-gray-400';
-            }
-        }
+function updateMusicIcon() {
+    const icon = document.getElementById('music-icon');
+
+    if (isPlaying) {
+        icon.className = 'fa-solid fa-music text-gold-400 animate-spin';
+    } else {
+        icon.className = 'fa-solid fa-volume-xmark text-gray-400';
+    }
+}
 
         /* -------------------------------------------------------------
            2. ENVELOPE OPENING ANIMATION
