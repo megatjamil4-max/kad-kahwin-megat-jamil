@@ -844,29 +844,51 @@ function updateMusicIcon() {
 }
 
         function addWish(e) {
-            e.preventDefault();
-            const author = document.getElementById('wish-author').value;
-            const message = document.getElementById('wish-message').value;
+    e.preventDefault();
 
-            if (!author || !message) return;
+    const author = document.getElementById('wish-author').value.trim();
+    const message = document.getElementById('wish-message').value.trim();
 
-            const wishesContainer = document.getElementById('wishes-container');
+    if (!author || !message) return;
 
-            const wishCard = document.createElement('div');
-            wishCard.className = "p-4 bg-white/90 rounded-xl border-l-4 border-gold-500 shadow-sm transition-all animate-fade-in";
-            wishCard.innerHTML = `
-                <div class="flex justify-between items-center mb-1">
-                    <h5 class="font-serif font-bold text-navy-900 text-base">${escapeHTML(author)}</h5>
-                    <span class="text-[10px] text-gray-400">Baru sahaja</span>
-                </div>
-                <p class="text-xs text-gray-700 italic">"${escapeHTML(message)}"</p>
-            `;
+    // Paparkan ucapan terus di website
+    const wishesContainer = document.getElementById('wishes-container');
 
-            wishesContainer.prepend(wishCard);
+    const wishCard = document.createElement('div');
+    wishCard.className = "p-4 bg-white/90 rounded-xl border-l-4 border-gold-500 shadow-sm transition-all";
 
-            // Reset Form
-            document.getElementById('wish-author').value = '';
-            document.getElementById('wish-message').value = '';
+    wishCard.innerHTML = `
+        <div class="flex justify-between items-center mb-1">
+            <h5 class="font-serif font-bold text-navy-900 text-base">
+                ${escapeHTML(author)}
+            </h5>
+            <span class="text-[10px] text-gray-400">Baru sahaja</span>
+        </div>
+        <p class="text-xs text-gray-700 italic">
+            "${escapeHTML(message)}"
+        </p>
+    `;
+
+    wishesContainer.prepend(wishCard);
+
+    // Hantar ucapan ke Google Sheets
+    fetch("https://script.google.com/macros/s/AKfycbxgLPmyYaYToLsdVZYZfJhmarMgQCk-Wa0p-RIH1mA531-MSLF2WRsjdon1lkaZUQ4Kbw/exec", {
+        method: "POST",
+        mode: "no-cors",
+        headers: {
+            "Content-Type": "text/plain;charset=utf-8"
+        },
+        body: JSON.stringify({
+            type: "wish",
+            author: author,
+            message: message
+        })
+    });
+
+    // Kosongkan borang
+    document.getElementById('wish-author').value = '';
+    document.getElementById('wish-message').value = '';
+}
         }
 
         function escapeHTML(str) {
